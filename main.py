@@ -20,11 +20,14 @@ def rearrangeData(file_path=None):
 
     dataModel = []
 
-    if file_path is not None:
-        pdf = pdfquery.PDFQuery("./example.pdf")
-        
+    print file_path
 
-        for index in range(0, 2):
+    if file_path is not None:
+        pdf = pdfquery.PDFQuery(file_path)
+        
+        totalpages = pdf.doc.catalog['Pages'].resolve()['Count']
+
+        for index in range(0, totalpages):
 
             pdf.load(index)
             for x in range(0,13):
@@ -35,13 +38,13 @@ def rearrangeData(file_path=None):
                     ('date', 'LTTextLineHorizontal:in_bbox("%s, %s, %s, %s")' % (date[0], date[1] - x*50.9, date[2], date[3] - x * 50.9) ),
                     ('fee', 'LTTextLineHorizontal:in_bbox("%s, %s, %s, %s")' % (fee[0], fee[1] - x*50.9, fee[2], fee[3] - x * 50.9) )
                 ])
-
+                # print row
                 # 重新整理資料
                 dataModel.append({
                     "enter": row["enter"],
-                    "leave": row['leave'].strip().replace(" ", "").split(u"\uff1a")[1],
+                    "leave": '' if row['leave'] is '' else row['leave'].strip().replace(" ", "").split(u"\uff1a")[1],
                     "date": row["date"],
-                    "fee": int(row["fee"].strip().replace(" ", "").split(u"\uff1a")[1]),
+                    "fee": '' if row["fee"] is '' else int(row["fee"].strip().replace(" ", "").split(u"\uff1a")[1]),
                 })
 
     return dataModel
